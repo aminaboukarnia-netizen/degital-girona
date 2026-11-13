@@ -67,12 +67,14 @@ function paintShot(
   if (!source || !sourceWidth || !sourceHeight) return;
   if (media.video && media.video.readyState < 2) return;
 
-  // Still pictures receive gentle pan/zoom; uploaded videos retain real movement.
-  const zoom = media.bitmap ? 1.06 + 0.05 * localProgress : 1.0;
+  // Still photos use gentle motion; actual videos get a small crop variation
+  // while retaining real hand movement. This does NOT create new camera angles.
+  const videoCropByScene = [1.1, 1.07, 1.13, 1.09, 1.04];
+  const zoom = media.bitmap ? 1.06 + 0.05 * localProgress : videoCropByScene[index] ?? 1.08;
   const scale = Math.max(cw / sourceWidth, ch / sourceHeight) * zoom;
   const dw = sourceWidth * scale;
   const dh = sourceHeight * scale;
-  const drift = media.bitmap ? (localProgress - 0.5) * 18 * (index % 2 === 0 ? 1 : -1) : 0;
+  const drift = (localProgress - 0.5) * (media.bitmap ? 18 : 8) * (index % 2 === 0 ? 1 : -1);
   ctx.drawImage(source, (cw - dw) / 2 + drift, (ch - dh) / 2, dw, dh);
   // Intentionally draw NO text, titles, logo, captions, subtitles or watermark.
 }
@@ -153,6 +155,20 @@ async function renderCrochet(
     // Use the user's own files, in order; if fewer than five, cycle them.
     const mediaForShot = files.map((f) => f ? sourceFiles.indexOf(f) : -1);
     const sequence = mediaForShot.map((slot, i) => prepared[slot < 0 ? i % prepared.length : slot]);
+
+    // When only one input video is provided, DON'T restart it from zero
+    // at every cut. Sample the beginning, middle, and actual finish.
+    const singleVideo = sourceFiles.length === 1 && prepared[0].video
+      ? prepared[0].video : null;
+    const sampleStart = (shot: number): number => {
+      if (!singleVideo) return 0;
+      const duration = Number.isFinite(singleVideo.duration) ? singleVideo.duration : 0;
+      const shotSeconds = CROCHET_VIDEO_PRESET.shots[shot].durationSeconds;
+      const latestStart = Math.max(0, duration - shotSeconds - 0.12);
+      return Math.min(latestStart, shot === 4
+        ? Math.max(0, duration - shotSeconds - 0.12)
+        : duration * (shot / 5));
+    };
     return await new Promise<string>((resolve, reject) => {
       let scene = -1;
       const startedAt = performance.now();
@@ -201,7 +217,9 @@ async function renderCrochet(
               scene = nextScene;
               const current = sequence[scene].video;
               if (current) {
-                current.currentTime = 0;
+                // With one clip, pick a DIFFERENT time range for every scene.
+                // With multiple clips, each scene begins from its own source start.
+                current.currentTime = singleVideo === current ? sampleStart(scene) : 0;
                 void current.play().catch(() => undefined);
               }
             }
@@ -287,7 +305,7 @@ export default function CrochetStudio() {
           ))}
         </div>
         <p className="crochet-hint">إلا كان عندك فيديو أصلي ديال اليدين وهي كتخدم، استعمليه باش تبان الحركة حقيقية.
-          إلا عطيتينا ملف واحد، غادي يتكرر على 5 لقطات كتجربة مونتاج؛ ما غاديش يخلق زوايا تصوير جديدة. الصور الثابتة غادي تتحرك غير بتقريب وتحريك الكاميرا (Pan/Zoom)، ماشي توليد حركة الكروشي بالذكاء الاصطناعي.</p>
+          إلا عطيتينا فيديو واحد، البرنامج غادي يختار مراحل مختلفة منه (البداية، الوسط والنهاية) بدل تكرار نفس البداية، مع اختلاف بسيط فالتقريب. ما غاديش يخلق زوايا تصوير حقيقية جديدة. الصور الثابتة غادي تتحرك غير بتقريب وتحريك الكاميرا (Pan/Zoom)، ماشي توليد حركة الكروشي بالذكاء الاصطناعي.</p>
       </section>
       <section className="crochet-panel">
         <h2>2. موسيقى هادئة اختيارية</h2>
