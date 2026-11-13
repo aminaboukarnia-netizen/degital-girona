@@ -1,0 +1,12 @@
+# Never commit credentials or generated files
+.env
+.env.*
+!.env.example
+node_modules/
+.next/
+out/
+build/
+.vercel/
+*.log
+.DS_Store
+*.tsbuildinfo
