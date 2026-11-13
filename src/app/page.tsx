@@ -12,7 +12,8 @@ export default function Home() {
         <h1>من الفكرة للفيديو،<br /><em>وبموافقتك قبل النشر.</em></h1>
         <p>هذه النسخة الأولى للتحقق من النشر والاتصال فقط. لم نفعّل بعد توليد الفيديوهات، قواعد البيانات أو ربط منصات التواصل الاجتماعي.</p>
         <div className="actions">
-          <a className="primary" href="/studio">افتح استوديو الفيديوهات المجاني <span>↗</span></a>
+          <a className="primary" href="/crochet">استوديو الكروشي بلا كتابة <span>↗</span></a>
+          <a className="secondary" href="/studio">استوديو الأفكار والفيديوهات</a>
           <a className="secondary" href="/api/health" target="_blank" rel="noreferrer">فحص API الصحة <span>↗</span></a>
           <a className="secondary" href="#steps">شوف خطة التشغيل ↓</a>
         </div>
