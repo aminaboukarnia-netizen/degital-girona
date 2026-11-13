@@ -83,7 +83,7 @@ async function renderCrochet(
   progress: ProgressFn
 ): Promise<string> {
   const sourceFiles = files.filter((f): f is File => Boolean(f));
-  if (sourceFiles.length < 2) throw new Error("اختاري على الأقل جوج صور أو فيديوهات من زوايا مختلفة.");
+  if (sourceFiles.length < 1) throw new Error("اختاري على الأقل صورة أو فيديو واحد من الحاسوب.");
 
   const canvas = document.createElement("canvas");
   canvas.width = 540;
@@ -274,7 +274,7 @@ export default function CrochetStudio() {
           مع موسيقى هادئة من ملف عندك ومسموح باستعماله. بلا API ولا مصاريف توليد.</p>
       </section>
       <section className="crochet-panel">
-        <div className="crochet-heading"><h2>1. لقطات الكروشي</h2><span>صورة أو فيديو لكل زاوية — يمكن الاكتفاء بجوج على الأقل</span></div>
+        <div className="crochet-heading"><h2>1. لقطات الكروشي</h2><span>تقدري تجربي حتى بملف واحد؛ الزوايا الحقيقية المتعددة تحتاج تصوير أصلي من أكثر من زاوية</span></div>
         <div className="crochet-grid">
           {SHOT_NAMES.map((name, index) => (
             <label className="crochet-shot" key={name}>
@@ -287,7 +287,7 @@ export default function CrochetStudio() {
           ))}
         </div>
         <p className="crochet-hint">إلا كان عندك فيديو أصلي ديال اليدين وهي كتخدم، استعمليه باش تبان الحركة حقيقية.
-          الصور الثابتة غادي تتحرك غير بتقريب وتحريك الكاميرا (Pan/Zoom)، ماشي توليد حركة الكروشي بالذكاء الاصطناعي.</p>
+          إلا عطيتينا ملف واحد، غادي يتكرر على 5 لقطات كتجربة مونتاج؛ ما غاديش يخلق زوايا تصوير جديدة. الصور الثابتة غادي تتحرك غير بتقريب وتحريك الكاميرا (Pan/Zoom)، ماشي توليد حركة الكروشي بالذكاء الاصطناعي.</p>
       </section>
       <section className="crochet-panel">
         <h2>2. موسيقى هادئة اختيارية</h2>
@@ -311,14 +311,14 @@ export default function CrochetStudio() {
       </section>
       <section className="crochet-panel">
         <h2>3. تصدير معاينة الفيديو</h2>
-        <p>18 ثانية · عمودي 9:16 · خمسة زوايا · بلا نصوص ولا شعارات ولا تعليق صوتي · بلا نشر آلي.</p>
-        <button className="crochet-export" type="button" disabled={busy || files.filter(Boolean).length < 2}
+        <p>18 ثانية · عمودي 9:16 · حتى 5 لقطات (كتعاود اللقطة الوحيدة إلا ما كايناش غيرها) · بلا نصوص ولا شعارات ولا تعليق صوتي · بلا نشر آلي.</p>
+        <button className="crochet-export" type="button" disabled={busy || files.filter(Boolean).length < 1}
           onClick={exportVideo}>{busy ? "جاري تجهيز الفيديو…" : "صايب فيديو كروشي تجريبي مجاني"}</button>
         {busy && <progress className="crochet-progress" value={progress} max={100} />}
         {message && <p className="crochet-result" role="status">{message}</p>}
       </section>
       <aside className="crochet-safety"><b>باش نبقاو واضحين:</b> هاد الصفحة كتدير مونتاج محلي من صورك أو فيديوهاتك.
-        ما كتولّدش فيديو فوتورياليستي جديد بوحدها، وما كتخلص حتى خدمة. الصور والموسيقى ما كتترفعش للسيرفر.
+        ما كتولّدش فيديو فوتورياليستي جديد ولا زوايا حقيقية مختلفة من ملف واحد بوحدها، وما كتخلص حتى خدمة. الصور والموسيقى ما كتترفعش للسيرفر.
         نشر المحتوى على Instagram أو TikTok أو YouTube مازال معطّل، وخصو موافقتك الصريحة.
       </aside>
       <footer className="crochet-footer">NashrClip AI — معاينة شخصية مجانية وغير تجارية</footer>
